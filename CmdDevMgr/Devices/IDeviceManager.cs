@@ -4,7 +4,7 @@ namespace CmdDevMgr.Devices
 {
     interface IDeviceManager
     {
-        bool SetStatus(string hwId, DeviceStatus status);
+        bool SetStatus(DeviceInfo device, DeviceStatus status);
 
         IEnumerable<DeviceInfo> FindDevices(string filter = null, bool? enabled = null);
 

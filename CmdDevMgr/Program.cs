@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Linq;
 using CmdDevMgr.Devices;
 using CmdDevMgr.Options;
@@ -16,10 +17,10 @@ namespace CmdDevMgr
             return Parser.Default.ParseArguments<ListOptions, EnableOptions, DisableOptions, StatusOptions>(args)
                 .MapResult(
                     (ListOptions opts) => ListDevices(opts),
-                    (EnableOptions opts) => 0,
-                    (DisableOptions opts) => 0,
+                    (EnableOptions opts) => ChangeDeviceStatus(opts.HwId, true),
+                    (DisableOptions opts) => ChangeDeviceStatus(opts.HwId, false),
                     (StatusOptions opts) => ShowDeviceStatus(opts),
-                    errs => 1);
+                    errs => 3);
         }
 
         static int ListDevices(ListOptions options)
@@ -45,7 +46,12 @@ namespace CmdDevMgr
                 WriteLine($"{devices.Count()} matching device(s) found.");
                 return 0;
             }
-            catch(Exception err)
+            catch (Win32Exception err)
+            {
+                WriteLine($"Error: {err.Message}. Error Code: {err.NativeErrorCode}");
+                return 2;
+            }
+            catch (Exception err)
             {
                 WriteLine($"Error: {err.Message}");
                 return 1;
@@ -63,6 +69,42 @@ namespace CmdDevMgr
 
             Write(device);
             return 0;
+        }
+
+        static int ChangeDeviceStatus(string hwId, bool enable)
+        {
+            var device = _deviceManager.FindDevice(hwId);
+            if (device == null)
+            {
+                WriteLine("Error: device is not found");
+                return 1;
+            }
+
+            try
+            {
+                var status = enable ? DeviceStatus.Enabled : DeviceStatus.Disabled;
+                var isChanged = _deviceManager.SetStatus(device, status);
+
+                if (!isChanged)
+                {
+                    WriteLine($"Error: cannot change {device.DeviceDescription} status.");
+                    return 2;
+                }
+
+                WriteLine($"{device.DeviceDescription} has been {status.ToString().ToLower()}.");
+                return 0;
+            }
+            catch(Win32Exception err)
+            {
+                WriteLine($"Error: {err.Message}. Error Code: {err.NativeErrorCode}");
+                return 2;
+            }
+            catch(Exception err)
+            {
+                WriteLine($"Error: {err.Message}");
+                return 2;
+            }
+            
         }
     }
 }
