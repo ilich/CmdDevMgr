@@ -77,9 +77,13 @@ namespace CmdDevMgr.Devices
             }
         }
 
-        public DeviceStatus GetStatus(string hwId)
+        public DeviceInfo FindDevice(string hwId)
         {
-            throw new NotImplementedException();
+            var device = FindDevices().FirstOrDefault(
+                d => string.Compare(d.InstanceId, hwId, true) == 0
+                    || (d.HardwareIds?.Any(dhwid => string.Compare(dhwid, hwId, true) == 0) ?? false));
+
+            return device;
         }
 
         public bool SetStatus(string hwId, DeviceStatus status)
