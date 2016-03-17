@@ -61,7 +61,7 @@ namespace CmdDevMgr
                 return 1;
             }
 
-            WriteLine(device);
+            Write(device);
             return 0;
         }
     }

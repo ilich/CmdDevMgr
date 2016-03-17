@@ -3,7 +3,6 @@
     enum DeviceStatus
     {
         Enabled,
-        Disabled,
-        Error
+        Disabled
     }
 }

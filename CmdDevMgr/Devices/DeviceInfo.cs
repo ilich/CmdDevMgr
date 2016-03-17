@@ -13,7 +13,7 @@ namespace CmdDevMgr.Devices
 
         public Guid Guid { get; set; }
 
-        public DeviceStatus Status { get; set; }
+        public DeviceStatus? Status { get; set; }
 
         public string DeviceDescription { get; set; }
 
@@ -23,10 +23,11 @@ namespace CmdDevMgr.Devices
 
         public override string ToString()
         {
+            var status = Status?.ToString() ?? "Error";
             var text = new StringBuilder();
             text.AppendLine(InstanceId);
             text.AppendLine($"    Device Description: {DeviceDescription}");
-            text.AppendLine($"    Status: {Status}");
+            text.AppendLine($"    Status: {status}");
 
             text.AppendLine("    Hardware IDs:");
             HardwareIds?.ForEach(id => text.AppendLine($"        {id}"));

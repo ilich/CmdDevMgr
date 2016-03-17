@@ -57,7 +57,7 @@ namespace CmdDevMgr.Devices
                     }
                     else
                     {
-                        device.Status = DeviceStatus.Error;
+                        device.Status = null;
                     }
 
                     if (Filter(device, filter, enabled))
